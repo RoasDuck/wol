@@ -3,7 +3,7 @@ name: Build WOL Binary
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # 允许在 Actions 页面手动触发构建
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,44 +12,38 @@ jobs:
     strategy:
       matrix:
         include:
-          # 树莓派、电视盒子、Arm服务器用这个
           - os: linux
             arch: arm64
             output_name: wol-linux-arm64
-          # 普通电脑、NAS、VPS用这个
           - os: linux
             arch: amd64
             output_name: wol-linux-amd64
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # 升级为 v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5 # 升级为 v5
       with:
         go-version: '1.21'
 
     - name: Init and Tidy Dependencies
       run: |
-        # 判断是否存在 go.mod，如果不存在则初始化
         if [ ! -f go.mod ]; then go mod init wol; fi
-        
-        # 魔法命令：自动扫描 main.go 中的 import，自动下载缺少的依赖库
-        # 无论你引入了什么新库，这行命令都能搞定
         go mod tidy
 
     - name: Build Binary
       env:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
-        CGO_ENABLED: 0 # 静态编译，确保生成的程序没有任何外部依赖
+        CGO_ENABLED: 0
       run: |
-        # -ldflags="-s -w" 用于去除调试信息，减小文件体积
         go build -ldflags="-s -w" -o ${{ matrix.output_name }} main.go
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # 重点：升级为 v4 修复报错
       with:
         name: ${{ matrix.output_name }}
         path: ${{ matrix.output_name }}
+        # v4 版本不再默认覆盖同名文件，但这里因为 matrix 名字不同所以没影响
