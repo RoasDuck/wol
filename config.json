@@ -1,0 +1,17 @@
+{
+  "bemfa": {
+    "host": "bemfa.com:8344",
+    "uid": "你的巴法云UID",
+    "topic": "computer001"
+  },
+  "wol": {
+    "mac": "XX:XX:XX:XX:XX:XX",
+    "broadcast_ip": "255.255.255.255:9"
+  },
+  "ssh": {
+    "ip": "192.168.1.10:22",
+    "user": "root",
+    "private_key_path": "/root/.ssh/id_rsa", 
+    "shutdown_cmd": "shutdown -h now"
+  }
+}
