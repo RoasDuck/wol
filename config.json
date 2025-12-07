@@ -12,6 +12,7 @@
     "ip": "192.168.1.10:22",
     "user": "root",
     "private_key_path": "/root/.ssh/id_rsa", 
-    "shutdown_cmd": "shutdown -h now"
+    "shutdown_cmd": "shutdown /s /t 0"
   }
+
 }
