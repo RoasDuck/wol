@@ -3,6 +3,14 @@ name: Build WOL Binary
 on:
   push:
     branches: [ "main", "master" ]
+    # 核心修改：忽略以下文件的变更，不触发构建
+    paths-ignore:
+      - '**.md'           # 忽略所有 Markdown 文件 (包括 README.md)
+      - 'config.json'     # 忽略配置文件
+      - 'LICENSE'         # 忽略许可证文件
+      - '.gitignore'      # 忽略 git 忽略文件
+  
+  # 允许手动触发 (不受 paths-ignore 限制，任何时候点按钮都能跑)
   workflow_dispatch:
 
 jobs:
@@ -21,12 +29,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # 最新版 v4
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v5  # 最新版 v5
+      uses: actions/setup-go@v5
       with:
-        go-version: 'stable'     # 修正：使用最新稳定版 Go，避免使用过期的 1.21
+        go-version: 'stable'
 
     - name: Init and Tidy Dependencies
       run: |
@@ -39,11 +47,10 @@ jobs:
         GOARCH: ${{ matrix.arch }}
         CGO_ENABLED: 0
       run: |
-        # 移除符号表和调试信息(-s -w)，减小体积
         go build -ldflags="-s -w" -o ${{ matrix.output_name }} main.go
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4 # 修正：必须使用 v4 修复报错
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.output_name }}
         path: ${{ matrix.output_name }}
